@@ -1,0 +1,172 @@
+---
+title: "EVE 109 Section Week 3"
+output: 
+    github_document:
+      pandoc_args: [
+        "--output","README.md"
+      ]
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### 1. Manipulating dataframes
+
+As we saw last week, the most common class we work with in R is a dataframe. This week, we'll learn a few more ways to manipulate dataframes. This time we'll use the built in `iris` dataset:
+```{r}
+data(iris)
+head(iris)
+```
+
+&nbsp;
+
+One quick way to explore the data is using `summary`:
+
+```{r}
+summary(iris)
+```
+For quantitative columns, this gives you basic summary statistics and for categorical columns it gives you counts of each value. We could have also looked at the categorical data using the `table` command:
+
+```{r}
+table(iris$Species)
+```
+
+&nbsp;
+
+Let's take just the quantitative data for a moment:
+```{r}
+quant <- iris[,1:4]
+head(quant)
+```
+
+&nbsp;
+
+For easy summaries of rows or columns, we can us the commands `colSums`, `colMeans`, `rowSums`, and `rowMeans`
+```{r}
+means <- rowMeans(quant)
+```
+
+&nbsp;
+
+Maybe we want to add a column to the initial iris dataframe that has the mean of the different measurements. We can do that in two different ways:
+
+```{r}
+iris$mean <- rowMeans(quant) # Caluclate and name the new column at the same time or...
+means2 <- rowMeans(quant) # Calculate means
+newiris <- cbind(iris,means2) # cbind (column bind) to iris dataframe
+head(newiris)
+```
+
+
+&nbsp;
+&nbsp;
+&nbsp;
+
+### 2. Using the **adegenet** package to calulate heterozygosity
+
+Today we'll use microsatellite data from the Weeks et al. (2017) paper using genetic analysis to look at the effects of population recovery after an introduction. Let's read in the file:
+
+```{r}
+data <- read.csv("data/genotypes.csv") # Read in a file
+```
+
+Take a look at the data:
+```{r}
+head(data)
+```
+
+&nbsp;
+
+The first column is an id assigned to each individual. The second column gives the populations from which the individual was sampled. The third column gives the year of sampling. The remaining columns give the microsatellite data. Each individual has two numbers which represent the fragment lengths (read on a gel). If the two fragment lengths are the same, the individual is a heterozygote. If they are different, the individual is a homozygote.
+
+We will use the package **adegenet** to read in the microsatellite data and calculate heterozygosity. The manual for this package is [here](https://github.com/thibautjombart/adegenet/wiki). Install the package and call the library:
+
+```{r, eval=FALSE}
+install.packages("adegenet")
+```
+
+```{r,message=FALSE}
+library(adegenet)
+```
+
+&nbsp;
+
+The first thing we need to do is let the adegenet read in the microsatellite data. We can do this with the `df2genind`. Let's ask for help on that command:
+```{r}
+?df2genind
+```
+
+Look at the arguments. How can we format our allele data to meet the requirements of the package?
+```{r}
+alleles <- data[,4:ncol(data)]
+```
+The function `ncol` gives us the number of columns. So here we are asking for all columns except the first three, which do not contain genotype data. Okay, let's see if that works
+
+```{r}
+genind <- df2genind(alleles,sep="/",NA.char="NA/NA")
+summary(genind)
+```
+&nbsp;
+
+The object summary has most of the information we want:
+
+```{r}
+results <- summary(genind)
+names(results) # Show the different output values we can look at
+results$Hobs # Show observed heterozygosity
+```
+&nbsp;
+
+Notice that observed and expected heterozygosity has been calculated, but across the entire dataset. What if we supply different populations? We use the `seppop` function to tell it we want separate measurements for each population
+```{r}
+genindPop <- df2genind(alleles,sep="/",
+                    NA.char="NA/NA",
+                    pop=data$Pop)
+genindPop <- seppop(genindPop)
+genindPop
+```
+
+&nbsp;
+
+Notice the two locations are now separate. We can get the heterozygosity separately for each population:
+
+```{r}
+MtBuller <- summary(genindPop$MtBuller)
+MtHiggenbotham <- summary(genindPop$MtHigginbotham)
+MtBuller$Hobs # Observed heterozygosity for all Mt Buller Samples
+MtBuller$Hexp # Expected heterozygosity for all Mt Buller Samples
+```
+
+&nbsp;
+&nbsp;
+&nbsp;
+
+
+### Plotting heterozygosity
+
+Let's use a barplot to look at variation in heterozygostiy across all our markers:
+```{r}
+barplot(MtBuller$Hobs)
+```
+
+When we have a bunch of markers, we often take the mean across all those markers:
+```{r}
+mean(MtHiggenbotham$Hobs) # Mean observed heterozygosity in the Mt Higgenbotham population
+```
+Compare this value to the paper.
+
+&nbsp;
+&nbsp;
+&nbsp;
+
+# Homework
+
+Now that we know how to estimate observed and expected heterozygosity, we'll look at changes over time. Start a new script for your homework
+
+###*Homework 3: Write a script that does the following:*
+####1. Read in "genotypes.csv" and subset the dataframe to Mt Buller samples only. How many samples do you have from each year?
+####2. Calculate mean observed heterozygosity for each year. Put these into a single dataframe.
+####3. Calculate mean expected heterozygosity for each year. Add these to the dataframe from question 2.
+####4. Plot mean expected heterozygosity over time.
+####5. Add a vertical lines to your plot to show when introductions took place (hint - use the `abline` command)
