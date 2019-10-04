@@ -95,30 +95,6 @@ head(newiris)
     ## 5          5.0         3.6          1.4         0.2  setosa 2.550  2.550
     ## 6          5.4         3.9          1.7         0.4  setosa 2.850  2.850
 
- 
-
-We can also combine the characters of the columns. Say we wanted to create a column with the format "Species\_mean". Although we would rarely do this with numerical data, it can be useful for grouping by multiple factors. We can do use `paste` to do that:
-
-``` r
-iris$pasted <- paste(iris$Species,iris$mean,sep="_")
-head(iris)
-```
-
-    ##   Sepal.Length Sepal.Width Petal.Length Petal.Width Species  mean
-    ## 1          5.1         3.5          1.4         0.2  setosa 2.550
-    ## 2          4.9         3.0          1.4         0.2  setosa 2.375
-    ## 3          4.7         3.2          1.3         0.2  setosa 2.350
-    ## 4          4.6         3.1          1.5         0.2  setosa 2.350
-    ## 5          5.0         3.6          1.4         0.2  setosa 2.550
-    ## 6          5.4         3.9          1.7         0.4  setosa 2.850
-    ##         pasted
-    ## 1  setosa_2.55
-    ## 2 setosa_2.375
-    ## 3  setosa_2.35
-    ## 4  setosa_2.35
-    ## 5  setosa_2.55
-    ## 6  setosa_2.85
-
      
 
 ### 2. Using the **adegenet** package to calulate heterozygosity
@@ -308,13 +284,13 @@ MtBuller$Hexp # Expected heterozygosity for all Mt Buller Samples
 
 ### Plotting heterozygosity
 
-Let's use a barplot to loot at variation in heterozygostiy across all our markers:
+Let's use a barplot to look at variation in heterozygostiy across all our markers:
 
 ``` r
 barplot(MtBuller$Hobs)
 ```
 
-![](Week3_files/figure-markdown_github/unnamed-chunk-18-1.png)
+![](Week3_files/figure-markdown_github/unnamed-chunk-17-1.png)
 
 When we have a bunch of markers, we often take the mean across all those markers:
 
