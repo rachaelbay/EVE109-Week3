@@ -1,4 +1,4 @@
-EVE 109 Section Week 2
+EVE 109 Section Week 3
 ================
 
 ### 1. Manipulating dataframes
@@ -313,7 +313,7 @@ Now that we know how to estimate observed and expected heterozygosity, we'll loo
 
 #### 1. Read in "genotypes.csv" and subset the dataframe to Mt Buller samples only. How many samples do you have from each year?
 
-#### 2. Calculate mean observed heterozygosity for each year. Put these into a single dataframe.
+#### 2. Calculate mean observed heterozygosity for each year. Put these into a single dataframe along with a column indicating the year.
 
 #### 3. Calculate mean expected heterozygosity for each year. Add these to the dataframe from question 2.
 
